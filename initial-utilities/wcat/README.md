@@ -1,3 +1,4 @@
+# wcat
 
 In this directory, you should write the program `wcat.c` and compile it into
 the binary `wcat` (e.g., `gcc -o wcat wcat.c -Wall -Werror`).
@@ -22,6 +23,3 @@ the `tester` directory of this repository. This program has a few options; see
 the relevant
 [README](https://github.com/remzi-arpacidusseau/ostep-projects/blob/master/tester/README.md)
 for details.
-
-
-
