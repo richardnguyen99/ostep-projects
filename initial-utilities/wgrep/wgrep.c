@@ -11,6 +11,8 @@
 #include <stdio.h>	// stdout, fprintf
 #include <stdlib.h> // EXIT_*, exit
 
+#define ARR_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
 /**
  * @brief Naive string searching algorithm
  *
@@ -44,6 +46,23 @@ find(const char *s, const char *p)
 	return -1;
 }
 
+void
+printmatch(const char *s, long nread, const char *p)
+{
+	if (find(s, p) != -1)
+		fwrite(s, nread, 1, stdout);
+}
+
+void
+process(FILE *stream, char **lineptr, const char *pattern)
+{
+	size_t len = 0;
+	long nread = 0;
+
+	while ((nread = getline(lineptr, &len, stream)) != -1)
+		printmatch(*lineptr, nread, pattern);
+}
+
 int
 main(int argc, const char *argv[])
 {
@@ -53,10 +72,13 @@ main(int argc, const char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if (find(argv[1], argv[2]) != -1)
-		fprintf(stdout, "true\n");
-	else
-		fprintf(stdout, "false\n");
+	if (argc == 2)
+	{
+		char *line = NULL;
+
+		process(stdin, &line, argv[1]);
+		free(line);
+	}
 
 	return 0;
 }
