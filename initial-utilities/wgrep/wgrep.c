@@ -2,7 +2,7 @@
  * @file wgrep.c
  * @author Richard Nguyen (richard@richardhnguyen.com)
  * @brief Replicate version of Unix's grep
- * @version 0.2
+ * @version 0.3
  * @date 2022-12-11
  *
  * @copyright Copyright (c) 2022
@@ -34,6 +34,9 @@ find(const char *s, const char *p)
 	int i = 0;
 	int j = 0;
 
+	if (*p == '\0')
+		return 0;
+
 	for (i = 0; *(s + i) != '\0'; ++i)
 	{
 		for (j = 0; *(p + j) != '\0' && *(s + i + j) == *(p + j); ++j)
@@ -61,6 +64,8 @@ process(FILE *stream, char **lineptr, const char *pattern)
 
 	while ((nread = getline(lineptr, &len, stream)) != -1)
 		printmatch(*lineptr, nread, pattern);
+
+	free(*lineptr);
 }
 
 int
@@ -72,12 +77,28 @@ main(int argc, const char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	char *line = NULL;
+
 	if (argc == 2)
 	{
-		char *line = NULL;
-
 		process(stdin, &line, argv[1]);
-		free(line);
+
+		return 0;
+	}
+
+	for (int i = 2; i < argc; ++i)
+	{
+		FILE *fp = fopen(argv[i], "r");
+
+		if (fp == NULL)
+		{
+			fprintf(stdout, "wgrep: cannot open file\n");
+			exit(EXIT_FAILURE);
+		}
+
+		process(fp, &line, argv[1]);
+
+		fclose(fp);
 	}
 
 	return 0;
