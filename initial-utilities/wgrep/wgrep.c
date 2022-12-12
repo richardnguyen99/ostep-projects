@@ -2,7 +2,7 @@
  * @file wgrep.c
  * @author Richard Nguyen (richard@richardhnguyen.com)
  * @brief Replicate version of Unix's grep
- * @version 0.3
+ * @version 1.0
  * @date 2022-12-11
  *
  * @copyright Copyright (c) 2022
@@ -79,6 +79,7 @@ main(int argc, const char *argv[])
 
 	char *line = NULL;
 
+	// No file is specified. Read from stdin
 	if (argc == 2)
 	{
 		process(stdin, &line, argv[1]);
@@ -97,7 +98,6 @@ main(int argc, const char *argv[])
 		}
 
 		process(fp, &line, argv[1]);
-
 		fclose(fp);
 	}
 
