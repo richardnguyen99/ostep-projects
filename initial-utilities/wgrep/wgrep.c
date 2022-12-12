@@ -2,7 +2,7 @@
  * @file wgrep.c
  * @author Richard Nguyen (richard@richardhnguyen.com)
  * @brief Replicate version of Unix's grep
- * @version 0.1
+ * @version 0.2
  * @date 2022-12-11
  *
  * @copyright Copyright (c) 2022
