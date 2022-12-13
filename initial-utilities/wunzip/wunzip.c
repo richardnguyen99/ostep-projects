@@ -2,7 +2,7 @@
  * @file wunzip.c
  * @author RIchard Nguyen (richard@richardhnguyen.com)
  * @brief Simple decompression program.
- * @version 0.1
+ * @version 1.0
  * @date 2022-12-12
  *
  * @copyright Copyright (c) 2022
@@ -20,6 +20,24 @@ struct rle_t
 	int l;	// Run-length
 	char c; // Character
 };
+
+void
+unzip(FILE *stream)
+{
+	size_t item_read = 0;
+	int count;
+	char c;
+
+	// If it cannot read 4 bytes, it reaches EOF assuming the file is correctly
+	// formatted.
+	while ((item_read = fread(&count, sizeof(int), 1, stream)) == 1)
+	{
+		item_read = fread(&c, sizeof(char), 1, stream);
+
+		for (int i = 0; i < count; i++)
+			fprintf(stdout, "%c", c);
+	}
+}
 
 int
 main(int argc, const char *argv[])
@@ -41,6 +59,7 @@ main(int argc, const char *argv[])
 			exit(EXIT_FAILURE);
 		}
 
+		unzip(fp);
 		fclose(fp);
 	}
 
