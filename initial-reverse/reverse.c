@@ -2,7 +2,7 @@
  * @file reverse.c
  * @author Richard Nguyen (richard@richardhnguyen.com)
  * @brief A simple stream-reversing program.
- * @version 0.2
+ * @version 0.3
  * @date 2022-12-13
  *
  * @copyright Copyright (c) 2022
@@ -55,6 +55,23 @@ getlines(FILE *stream, size_t *cnt, size_t *cap)
 	return lines;
 }
 
+void
+swap(char **lines, size_t i, size_t j)
+{
+	char *tmp = lines[i];
+	lines[i]  = lines[j];
+	lines[j]  = tmp;
+}
+
+void
+inplace_reverse(char **lines, size_t n)
+{
+	size_t mid = n / 2;
+
+	for (size_t i = 0; i < mid; ++i)
+		swap(lines, i, n - i - 1);
+}
+
 int
 main(int argc, const char *argv[])
 {
@@ -81,6 +98,8 @@ main(int argc, const char *argv[])
 		lines = getlines(fp, &cnt, &cap);
 		fclose(fp);
 	}
+
+	inplace_reverse(lines, cnt);
 
 	for (size_t i = 0; i < cnt; ++i)
 		free(lines[i]);
