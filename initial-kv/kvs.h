@@ -56,6 +56,9 @@ extern "C"
 	char *
 	get(struct kvs_t *htable, void *key);
 
+	void
+	update(struct kvs_t *htable, void *key, void *new_value);
+
 #ifdef __cplusplus
 }
 #endif

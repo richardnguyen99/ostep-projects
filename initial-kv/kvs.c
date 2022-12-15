@@ -256,3 +256,34 @@ get(struct kvs_t *htable, void *key)
 
 	return (char *)(curr->val.val);
 }
+
+void
+update_list(struct list_t *chain, void *key, void *new_value)
+{
+
+	struct node_t *curr = chain->first->next;
+	for (; curr != NULL; curr = curr->next)
+	{
+		if (strcmp((char *)key, (char *)(curr->val.key)) == 0)
+		{
+			free(curr->val.val);
+			curr->val.val = strdup(new_value);
+			break;
+		}
+	}
+}
+
+void
+update(struct kvs_t *htable, void *key, void *new_value)
+{
+	size_t ht_idx		 = hash((unsigned char *)key) % htable->cap;
+	struct list_t *chain = htable->chains[ht_idx];
+
+	if (chain == NULL)
+	{
+		struct pair_t new_pair = {key, new_value};
+		enqueue(chain, new_pair);
+	}
+	else
+		update_list(chain, key, new_value);
+}

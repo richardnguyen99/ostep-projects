@@ -18,7 +18,8 @@ main()
 	struct kvs_t *kvs = init_htable();
 
 	// For debugging
-	char *tmp[] = {"key,31", "port,3", "key,value", "kv,store", "key,123"};
+	char *tmp[]	 = {"key,31", "port,3", "key,value", "kv,store", "key,123"};
+	char *keys[] = {"key", "port", "key", "kv", "key"};
 
 	for (int i = 0; i < 5; ++i)
 	{
@@ -32,6 +33,21 @@ main()
 		// itself.
 		if (res == -1)
 			freepair(pair);
+	}
+
+	update(kvs, "key", "123");
+	get(kvs, "key");
+
+	for (int i = 0; i < 5; ++i)
+	{
+		char *value = get(kvs, keys[i]);
+
+		printf("\
+{\n\
+    key: %s,\n\
+    value: %s \n\
+}\n",
+			   (char *)(keys[i]), (char *)(value));
 	}
 
 	free_htable(kvs);
