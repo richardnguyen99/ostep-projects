@@ -19,18 +19,36 @@ extern "C"
 		void *val;
 	};
 
+	struct node_t
+	{
+		struct pair_t val;
+		struct node_t *next;
+	};
+
+	struct list_t
+	{
+		struct node_t *first;
+		struct node_t *last;
+	};
+
 	struct kvs_t
 	{
-		struct pair_t *pairs;
+		struct list_t **chains;
 		size_t cnt;
 		size_t cap;
 	};
 
-	struct pair_t *
+	struct pair_t
 	parsepair(const char *str);
 
 	void
-	freepair(struct pair_t *pair);
+	freepair(struct pair_t pair);
+
+	struct kvs_t *
+	init_htable();
+
+	void
+	free_htable(struct kvs_t *htable);
 
 #ifdef __cplusplus
 }

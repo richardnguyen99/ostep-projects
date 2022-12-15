@@ -15,18 +15,23 @@
 int
 main(int argc, const char *argv[])
 {
+	struct kvs_t *kvs = init_htable();
+
 	for (int i = 1; i < argc; ++i)
 	{
-		struct pair_t *pair = parsepair(argv[i]);
+		struct pair_t pair = parsepair(argv[i]);
 
 		printf("\
 {\n\
     key: %s,\n\
     value: %s \n\
 }\n",
-			   (char *)(pair->key), (char *)(pair->val));
+			   (char *)(pair.key), (char *)(pair.val));
 		freepair(pair);
 	}
+
+	free_htable(kvs);
+	free(kvs);
 
 	return 0;
 }
