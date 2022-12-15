@@ -13,21 +13,18 @@
 #include <stdio.h>
 
 int
-main(int argc, const char *argv[])
+main()
 {
 	struct kvs_t *kvs = init_htable();
 
-	for (int i = 1; i < argc; ++i)
-	{
-		struct pair_t pair = parsepair(argv[i]);
+	// For debugging
+	char *tmp[] = {"key,31", "port,3", "key,value", "kv,store"};
 
-		printf("\
-{\n\
-    key: %s,\n\
-    value: %s \n\
-}\n",
-			   (char *)(pair.key), (char *)(pair.val));
-		freepair(pair);
+	for (int i = 0; i < 4; ++i)
+	{
+		struct pair_t pair = parsepair(tmp[i]);
+
+		put(kvs, pair);
 	}
 
 	free_htable(kvs);

@@ -85,6 +85,38 @@ freepair(struct pair_t pair)
 	free(pair.val);
 }
 
+void
+init_chain(struct kvs_t *htable, size_t idx)
+{
+	htable->chains[idx] = (struct list_t *)malloc(sizeof(struct list_t));
+	errorf(htable->chains[idx], "malloc failed");
+
+	struct list_t *chain = htable->chains[idx];
+
+	chain->first = (struct node_t *)malloc(sizeof(struct node_t));
+	errorf(chain->first, "malloc failed");
+	chain->first->val.key = NULL;
+	chain->first->val.val = NULL;
+	chain->first->next	  = NULL;
+
+	chain->last = chain->first;
+}
+
+struct node_t *
+enqueue(struct list_t *chain, struct pair_t pair)
+{
+	struct node_t *node = (struct node_t *)malloc(sizeof(struct node_t));
+	errorf(node, "malloc failed");
+
+	memcpy(&(node->val), &pair, sizeof(pair));
+	node->next = NULL;
+
+	chain->last->next = node;
+	chain->last		  = chain->last->next;
+
+	return node;
+}
+
 struct kvs_t *
 init_htable()
 {
@@ -103,10 +135,10 @@ init_htable()
 	htable->chains =
 		(struct list_t **)malloc(sizeof(struct list_t *) * htable->cap);
 
+	errorf(htable->chains, "malloc failed");
+
 	for (size_t i = 0; i < htable->cap; i++)
 		htable->chains[i] = NULL;
-
-	errorf(htable->chains, "malloc failed");
 
 	return htable;
 }
@@ -145,4 +177,32 @@ free_htable(struct kvs_t *htable)
 	}
 
 	free(htable->chains);
+}
+
+void
+put(struct kvs_t *htable, struct pair_t pair)
+{
+	// errorf(stream, "file steam is null");
+	errorf(htable, "hash table is null");
+
+	size_t ht_idx = hash(pair.key) % htable->cap;
+
+	if (htable->chains[ht_idx] == NULL)
+		init_chain(htable, ht_idx);
+
+	enqueue(htable->chains[ht_idx], pair);
+
+#ifdef DEBUG
+	struct pair_t new_pair = htable->chains[ht_idx]->last->val;
+
+	printf("Index: %ld\n", ht_idx);
+	printf("\
+{\n\
+    key: %s,\n\
+    value: %s \n\
+}\n",
+		   (char *)(new_pair.key), (char *)(new_pair.val));
+#endif
+
+	htable->cnt++;
 }

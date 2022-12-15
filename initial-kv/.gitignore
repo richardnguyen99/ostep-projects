@@ -1,4 +1,6 @@
 kv
+kvs
+main
 *.o
 
 database.txt
