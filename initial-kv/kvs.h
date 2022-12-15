@@ -50,8 +50,11 @@ extern "C"
 	void
 	free_htable(struct kvs_t *htable);
 
-	void
+	int
 	put(struct kvs_t *htable, struct pair_t pair);
+
+	char *
+	get(struct kvs_t *htable, void *key);
 
 #ifdef __cplusplus
 }

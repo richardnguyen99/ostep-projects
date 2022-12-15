@@ -105,12 +105,22 @@ init_chain(struct kvs_t *htable, size_t idx)
 struct node_t *
 enqueue(struct list_t *chain, struct pair_t pair)
 {
+
+	struct node_t *curr = chain->first->next;
+	for (; curr != NULL; curr = curr->next)
+	{
+		if (strcmp((char *)pair.key, (char *)(curr->val.key)) == 0)
+		{
+
+			return curr;
+		}
+	}
+
 	struct node_t *node = (struct node_t *)malloc(sizeof(struct node_t));
 	errorf(node, "malloc failed");
 
 	memcpy(&(node->val), &pair, sizeof(pair));
-	node->next = NULL;
-
+	node->next		  = NULL;
 	chain->last->next = node;
 	chain->last		  = chain->last->next;
 
@@ -179,7 +189,7 @@ free_htable(struct kvs_t *htable)
 	free(htable->chains);
 }
 
-void
+int
 put(struct kvs_t *htable, struct pair_t pair)
 {
 	// errorf(stream, "file steam is null");
@@ -190,7 +200,10 @@ put(struct kvs_t *htable, struct pair_t pair)
 	if (htable->chains[ht_idx] == NULL)
 		init_chain(htable, ht_idx);
 
-	enqueue(htable->chains[ht_idx], pair);
+	struct node_t *res = enqueue(htable->chains[ht_idx], pair);
+
+	if (strcmp((char *)(pair.val), (char *)(res->val.val)) != 0)
+		return -1;
 
 #ifdef DEBUG
 	struct pair_t new_pair = htable->chains[ht_idx]->last->val;
@@ -205,4 +218,41 @@ put(struct kvs_t *htable, struct pair_t pair)
 #endif
 
 	htable->cnt++;
+	return 0;
+}
+
+int
+keycmp(void *s1, void *s2)
+{
+	return strcmp((char *)s1, (char *)s2);
+}
+
+char *
+get(struct kvs_t *htable, void *key)
+{
+	size_t ht_idx = hash((unsigned char *)key) % htable->cap;
+
+	if (htable->chains[ht_idx] == NULL)
+		return NULL;
+
+	struct list_t *chain = htable->chains[ht_idx];
+
+	struct node_t *curr = chain->first->next;
+	for (; curr != NULL; curr = curr->next)
+	{
+		if (strcmp((char *)key, (char *)(curr->val.key)) == 0)
+			break;
+	}
+
+#ifdef DEBUG
+	printf("Index: %ld\n", ht_idx);
+	printf("\
+{\n\
+    key: %s,\n\
+    value: %s \n\
+}\n",
+		   (char *)(key), (char *)(curr->val.val));
+#endif
+
+	return (char *)(curr->val.val);
 }
