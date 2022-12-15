@@ -110,10 +110,7 @@ enqueue(struct list_t *chain, struct pair_t pair)
 	for (; curr != NULL; curr = curr->next)
 	{
 		if (strcmp((char *)pair.key, (char *)(curr->val.key)) == 0)
-		{
-
 			return curr;
-		}
 	}
 
 	struct node_t *node = (struct node_t *)malloc(sizeof(struct node_t));
@@ -125,6 +122,45 @@ enqueue(struct list_t *chain, struct pair_t pair)
 	chain->last		  = chain->last->next;
 
 	return node;
+}
+
+void
+free_list(struct node_t *begin)
+{
+	struct node_t *curr;
+
+	while (begin != NULL)
+	{
+		curr  = begin;
+		begin = begin->next;
+
+		freepair(curr->val);
+		free(curr);
+	}
+}
+
+int
+dequeue(struct list_t *chain, void *key)
+{
+	struct node_t *prev = chain->first;
+	struct node_t *curr = prev->next;
+
+	for (; curr != NULL; curr = curr->next)
+	{
+		if (strcmp((char *)(curr->val.key), (char *)(key)) == 0)
+		{
+			prev->next = curr->next;
+			freepair(curr->val);
+			free(curr);
+			break;
+		}
+		prev = prev->next;
+	}
+
+	if (curr == NULL)
+		return -1;
+
+	return 0;
 }
 
 struct kvs_t *
@@ -151,21 +187,6 @@ init_htable()
 		htable->chains[i] = NULL;
 
 	return htable;
-}
-
-void
-free_list(struct node_t *begin)
-{
-	struct node_t *curr;
-
-	while (begin != NULL)
-	{
-		curr  = begin;
-		begin = begin->next;
-
-		freepair(curr->val);
-		free(curr);
-	}
 }
 
 void
@@ -286,4 +307,25 @@ update(struct kvs_t *htable, void *key, void *new_value)
 	}
 	else
 		update_list(chain, key, new_value);
+}
+
+int
+destroy(struct kvs_t *htable, void *key)
+{
+	size_t ht_idx		 = hash((unsigned char *)key) % htable->cap;
+	struct list_t *chain = htable->chains[ht_idx];
+
+	if (chain == NULL)
+		return -1;
+
+	int res = dequeue(chain, key);
+
+	if (chain->first->next == NULL)
+	{
+		free_list(chain->first);
+		free(htable->chains[ht_idx]);
+		htable->chains[ht_idx] = NULL;
+	}
+
+	return res;
 }

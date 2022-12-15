@@ -59,6 +59,9 @@ extern "C"
 	void
 	update(struct kvs_t *htable, void *key, void *new_value);
 
+	int
+	destroy(struct kvs_t *htable, void *key);
+
 #ifdef __cplusplus
 }
 #endif

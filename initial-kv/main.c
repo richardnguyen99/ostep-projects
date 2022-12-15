@@ -37,6 +37,7 @@ main()
 
 	update(kvs, "key", "123");
 	get(kvs, "key");
+	destroy(kvs, "key");
 
 	for (int i = 0; i < 5; ++i)
 	{
