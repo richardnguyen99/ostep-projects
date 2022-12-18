@@ -2,6 +2,7 @@
 #define __KVS_H 1
 
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #ifdef __cplusplus
@@ -61,6 +62,9 @@ extern "C"
 
 	int
 	destroy(struct kvs_t *htable, void *key);
+
+	void
+	save(FILE *stream, struct kvs_t *htable);
 
 #ifdef __cplusplus
 }

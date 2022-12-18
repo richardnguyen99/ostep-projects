@@ -1,6 +1,5 @@
 #include "kvs.h"
 
-#include <stdio.h>
 #include <string.h>
 
 void
@@ -122,6 +121,16 @@ enqueue(struct list_t *chain, struct pair_t pair)
 	chain->last		  = chain->last->next;
 
 	return node;
+}
+
+void
+print_list(FILE *stream, struct list_t *chain)
+{
+	struct node_t *curr = chain->first->next;
+
+	for (; curr != NULL; curr = curr->next)
+		fprintf(stream, "%s,%s", (char *)(curr->val.key),
+				(char *)(curr->val.val));
 }
 
 void
@@ -328,4 +337,18 @@ destroy(struct kvs_t *htable, void *key)
 	}
 
 	return res;
+}
+
+void
+save(FILE *stream, struct kvs_t *htable)
+{
+	for (size_t i = 0; i < htable->cap; ++i)
+	{
+		struct list_t *chain = htable->chains[i];
+
+		if (chain == NULL)
+			continue;
+
+		print_list(stream, chain);
+	}
 }
